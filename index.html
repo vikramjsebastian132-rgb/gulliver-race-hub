@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gulliver Boys XC Race Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a coach's clipboard. Summary strip, then findings, the live score simulator, season charts, matchups, rosters. Gulliver = wine, Bolles = steel. */
+:root {
+  --bg: #F5F4F1;
+  --surface: #FFFFFF;
+  --ink: #1C1D21;
+  --muted: #62656E;
+  --line: #E1DED8;
+  --gul: #8C1D3A;
+  --gul-soft: #F6E7EB;
+  --bol: #2C5C8F;
+  --bol-soft: #E5EDF6;
+  --good: #1E7B45;
+  --good-soft: #E3F3E8;
+  --warn: #A3620A;
+  --warn-soft: #FBF0DD;
+  --bad: #B42318;
+  --bad-soft: #FBE7E5;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15161A; --surface: #1E2026; --ink: #ECEBE8; --muted: #A2A5AE; --line: #33363E;
+    --gul: #E0607F; --gul-soft: #3A1E27; --bol: #6FA3DA; --bol-soft: #1C2A3A;
+    --good: #5CC98A; --good-soft: #17301F; --warn: #E3A64A; --warn-soft: #33270F; --bad: #F07A6E; --bad-soft: #3A1C19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15161A; --surface: #1E2026; --ink: #ECEBE8; --muted: #A2A5AE; --line: #33363E;
+  --gul: #E0607F; --gul-soft: #3A1E27; --bol: #6FA3DA; --bol-soft: #1C2A3A;
+  --good: #5CC98A; --good-soft: #17301F; --warn: #E3A64A; --warn-soft: #33270F; --bad: #F07A6E; --bad-soft: #3A1C19;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 60px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: .01em; text-wrap: balance; margin: 0; }
+h1 { font-size: 40px; line-height: 1.05; }
+h2 { font-size: 26px; line-height: 1.1; }
+h3 { font-size: 19px; }
+p { margin: 0; max-width: 72ch; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.num, td.num, .tab { font-variant-numeric: tabular-nums; }
+.g { color: var(--gul); font-weight: 600; }
+.b { color: var(--bol); font-weight: 600; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-family: var(--display); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.toc a { font-size: 13px; color: var(--ink); text-decoration: none; border: 1px solid var(--line); background: var(--surface); padding: 4px 10px; border-radius: 999px; }
+nav.toc a:hover, nav.toc a:focus-visible { border-color: var(--gul); color: var(--gul); }
+
+/* summary tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.tile .label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.tile .vs { font-family: var(--display); font-size: 30px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.tile .note { font-size: 12.5px; color: var(--muted); }
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .tiles { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+
+/* findings */
+.findings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 760px) { .findings { grid-template-columns: 1fr; } }
+.finding { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
+.finding.opp { border-left-color: var(--good); }
+.finding.risk { border-left-color: var(--bad); }
+.finding.ask { border-left-color: var(--warn); }
+.finding h3 { font-size: 17px; }
+.pill { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; width: max-content; }
+.pill.opp { background: var(--good-soft); color: var(--good); }
+.pill.risk { background: var(--bad-soft); color: var(--bad); }
+.pill.ask { background: var(--warn-soft); color: var(--warn); }
+.pill.steady { background: var(--bol-soft); color: var(--bol); }
+
+/* simulator */
+.sim { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .sim { grid-template-columns: 1fr; } }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: inherit; font-size: 13.5px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 6px 12px; border-radius: 8px; }
+button:hover { border-color: var(--ink); }
+button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--gul); outline-offset: 2px; }
+.scoreboard { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 12px; align-items: stretch; }
+@media (max-width: 520px) { .scoreboard { grid-template-columns: 1fr 1fr; } .scoreboard .verdict { grid-column: 1 / -1; } }
+.sb-team { border-radius: 10px; padding: 12px 14px; display: grid; gap: 2px; }
+.sb-team.gul { background: var(--gul-soft); }
+.sb-team.bol { background: var(--bol-soft); }
+.sb-team .pts { font-family: var(--display); font-size: 46px; line-height: 1; font-variant-numeric: tabular-nums; }
+.sb-team.gul .pts { color: var(--gul); }
+.sb-team.bol .pts { color: var(--bol); }
+.sb-team .scorers { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.verdict { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; align-content: center; }
+.verdict .big { font-family: var(--display); font-size: 24px; line-height: 1.1; }
+.verdict.win .big { color: var(--good); }
+.verdict.lose .big { color: var(--bad); }
+.runners { display: grid; gap: 4px; }
+.runners h3 { margin: 8px 0 2px; }
+.rrow { display: grid; grid-template-columns: 150px 1fr 74px 64px; gap: 10px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.rrow:last-child { border-bottom: 0; }
+.rrow .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rrow .tm { text-align: right; font-variant-numeric: tabular-nums; }
+.rrow .pl { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12.5px; }
+.rrow input[type="range"] { width: 100%; }
+.rrow.gul input { accent-color: var(--gul); }
+.rrow.bol input { accent-color: var(--bol); }
+.delta.fast { color: var(--good); }
+.delta.slow { color: var(--bad); }
+@media (max-width: 520px) { .rrow { grid-template-columns: 110px 1fr 64px; } .rrow .pl { display: none; } }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.hl-g td { background: var(--gul-soft); }
+#gulTable td:first-child, #bolTable td:first-child { white-space: nowrap; }
+tr.hl-b td { background: var(--bol-soft); }
+.tablewrap { overflow-x: auto; }
+
+/* charts */
+.chart-head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: end; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 22px; height: 0; border-top: 3px solid; display: inline-block; }
+.sw.dash { border-top-style: dashed; }
+svg text { font-family: var(--body); fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+svg .gridl { stroke: var(--line); stroke-width: 1; }
+svg .lbl-strong { fill: var(--ink); font-weight: 600; }
+.chartbox { width: 100%; overflow-x: auto; }
+.chartbox svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12.5px; padding: 6px 9px; border-radius: 6px; opacity: 0; transition: opacity .1s; z-index: 10; max-width: 240px; }
+@media (prefers-reduced-motion: reduce) { .tip { transition: none; } }
+
+/* matchups */
+.battles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 760px) { .battles { grid-template-columns: 1fr; } }
+.battle { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; }
+.battle .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.battle .worth { font-family: var(--display); font-size: 18px; color: var(--good); white-space: nowrap; }
+.battle table td, .battle table th { padding: 5px 6px; }
+.chip { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.chip.up { background: var(--good-soft); color: var(--good); }
+.chip.down { background: var(--bad-soft); color: var(--bad); }
+.chip.vol { background: var(--warn-soft); color: var(--warn); }
+.chip.flat { background: var(--bol-soft); color: var(--bol); }
+.sb { font-weight: 600; }
+td.isSB { color: var(--good); font-weight: 600; }
+td.slowc { color: var(--muted); font-style: italic; }
+ol.asks { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 80ch; }
+footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 14px; }
+footer a { color: inherit; }
+
+:root { --j-reach: #2F6FD6; --j-close: #1A9E55; --j-wall: #D23B3B; --j-reset: #B88A00; --j-press: #E06A12; --j-finish: #8B47D6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --j-reach: #6EA2F0; --j-close: #4FCB86; --j-wall: #F07070; --j-reset: #E8C14A; --j-press: #F59A52; --j-finish: #B78CF2; } }
+:root[data-theme="dark"] { --j-reach: #6EA2F0; --j-close: #4FCB86; --j-wall: #F07070; --j-reset: #E8C14A; --j-press: #F59A52; --j-finish: #B78CF2; }
+header.hub { position: sticky; top: 0; z-index: 5; background: var(--bg); padding-top: 6px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); margin: -28px -20px 0; padding: 18px 20px 0; }
+.hub-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px; }
+.hub-top h1 { font-size: 34px; }
+.dl { display: flex; flex-wrap: wrap; gap: 8px; }
+.dl a { font-size: 13px; color: var(--ink); text-decoration: none; border: 1px solid var(--line); background: var(--surface); padding: 5px 10px; border-radius: 8px; }
+.dl a:hover { border-color: var(--ink); }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+.tab { flex: none; font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: .02em; color: var(--muted); text-decoration: none; padding: 8px 14px 10px; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-current="page"] { color: var(--gul); border-bottom-color: var(--gul); }
+.tab.runner::before { content: ""; display: inline-block; width: 1px; }
+.tab[data-tab="kayaan"] { margin-left: 10px; border-left: 1px solid var(--line); }
+.panel { display: grid; gap: 22px; }
+.panel[hidden] { display: none; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.map-two { grid-template-columns: 1.15fr 1fr; }
+@media (max-width: 860px) { .two, .map-two { grid-template-columns: 1fr; } }
+.card h3 { margin-bottom: 8px; }
+.rule { display: flex; flex-wrap: wrap; gap: 10px 22px; font-family: var(--display); font-size: 22px; font-weight: 700; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--gul); border-radius: 10px; padding: 12px 16px; }
+.mapfig { margin: 0; display: grid; gap: 8px; }
+.mapfig img { width: 100%; height: auto; border-radius: 6px; display: block; }
+ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+.jobtag { font-weight: 700; font-size: 13px; white-space: nowrap; }
+dl.defs { margin: 0; display: grid; gap: 8px; }
+dl.defs dt { font-weight: 600; }
+dl.defs dd { margin: 0 0 4px; color: var(--muted); }
+ul.notes { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ul.checks li { display: flex; gap: 8px; align-items: flex-start; }
+ul.checks input { margin-top: 4px; accent-color: var(--gul); }
+.runner-head { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: end; background: var(--gul-soft); border-radius: 12px; padding: 18px 20px; }
+.rh-main { display: grid; gap: 4px; max-width: 60ch; }
+.rname { font-size: 38px; line-height: 1; color: var(--gul); }
+.rrole { font-size: 15.5px; }
+.rh-stats { display: flex; flex-wrap: wrap; gap: 22px; }
+.rh-stats > div { display: grid; gap: 2px; }
+.rh-stats .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.rh-stats .big { font-family: var(--display); font-size: 24px; font-weight: 700; }
+.job { display: grid; gap: 12px; align-content: start; }
+.jobrow { display: grid; gap: 4px; }
+.jobrow p { font-size: 15px; }
+ol.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+ol.plan li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: start; }
+.jobdot { width: 12px; height: 12px; border-radius: 3px; margin-top: 5px; }
+footer { border-top: 1px solid var(--line); }
+@media (max-width: 700px) {
+  header.hub { position: static; }
+  .hub-top h1 { font-size: 28px; }
+  .rname { font-size: 30px; }
+  .rule { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hub">
+  <div class="hub-top">
+    <div>
+      <div class="eyebrow">Gulliver Prep Boys XC · Apalachee Regional Park 5K · Race Friday</div>
+      <h1>Race Hub</h1>
+    </div>
+    <div class="dl">
+      <a href="Gulliver_Boys_Race_Packet.pdf" target="_blank" rel="noopener">Boys packet (PDF)</a>
+      <a href="Gulliver_vs_Bolles_Scouting_Board.pdf" target="_blank" rel="noopener">Scouting board (PDF)</a>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Sections"><a class="tab" href="#overview" data-tab="overview">Overview</a><a class="tab" href="#race-plan" data-tab="race-plan">Race plan</a><a class="tab runner" href="#kayaan" data-tab="kayaan">Kayaan</a><a class="tab runner" href="#emilio" data-tab="emilio">Emilio</a><a class="tab runner" href="#adrian" data-tab="adrian">Adrian</a><a class="tab runner" href="#nicolas" data-tab="nicolas">Nicolas</a><a class="tab runner" href="#tyler" data-tab="tyler">Tyler</a><a class="tab runner" href="#christopher" data-tab="christopher">Christopher</a><a class="tab runner" href="#aston" data-tab="aston">Aston</a></nav>
+</header>
+
+<section class="panel" id="p-overview">
+<div style="display:grid;gap:6px"><h2>Overview: Gulliver vs Bolles</h2><p class="muted">Both teams' seasons side by side, the one race we shared, and a live simulator that re-scores the whole meet when you change any runner's time.</p></div>
+<div class="tiles" role="list">
+  <div class="tile" role="listitem"><span class="label">Virtual meet (season bests)</span><span class="vs"><span class="g">65</span> · <span class="b">42</span></span><span class="note">Gulliver vs Bolles. 23 points to flip. 3rd place is 202.</span></div>
+  <div class="tile" role="listitem"><span class="label">New World, Oct 16 (same race)</span><span class="vs"><span class="g">34</span> · <span class="b">23</span></span><span class="note">Scored as a dual. Our only full-strength meeting.</span></div>
+  <div class="tile" role="listitem"><span class="label">Same course, Bolles a month later</span><span class="vs"><span class="g">32</span> · <span class="b">23</span></span><span class="note">Our New World (Oct 16) vs Bolles' Regionals (Nov 13), both on the fast New World course.</span></div>
+  <div class="tile" role="listitem"><span class="label">Top-5 average gap, New World course</span><span class="vs">11.8 → 14.1 s</span><span class="note">Per runner: same race Oct 16, then vs Bolles' Nov 13 Regionals. Rigdon came back.</span></div>
+</div>
+
+<section id="findings">
+  <h2>What the data says</h2>
+  <div class="findings">
+    <article class="finding opp"><span class="pill opp">Opening</span><h3>Bolles' 6–7 are fading, and it isn't the course</h3><p>On the same New World course a month apart, Barragan went from 16:17 to 17:24.8 and Sumner from 16:23 to 16:37. Battle 2 is the cheapest points on the board.</p></article>
+    <article class="finding risk"><span class="pill risk">Risk</span><h3>Their top five held form, and Rigdon is back</h3><p>Same course, Oct 16 to Nov 13: Ches +3.5 s, Sharma +1.9 s, Cleek +1.9 s, Chandler −4.5 s, and Rigdon −52 s (16:55 to 16:02.8). He and Cleek now run as a 16:03 pair.</p></article>
+    <article class="finding risk"><span class="pill risk">Risk</span><h3>The 23-point gap is real</h3><p>In the one race we shared (New World, Oct 16) Bolles won 34–23 as a dual. Our Oct 16 times against their Nov 13 times on the same course: 32–23. Nicolas lost to Barragan by 1.0 s on Oct 16.</p></article>
+    <article class="finding ask"><span class="pill steady">Context</span><h3>The virtual meet compares like with like at the top</h3><p>Most of both teams' season bests were run on the fast New World course, including Bolles' Regionals. The exceptions are Adrian (15:52.16) and Christopher (16:30.74), who set bests at our Regionals on a different course.</p></article>
+    <article class="finding opp"><span class="pill opp">Strength</span><h3>Our 4–7 has the steepest curve</h3><p>First race to last: Christopher −58 s, Nicolas −32 s, Tyler −30 s, Aston −20 s. Bolles' big gains came from last year (Cleek −63 s, Sumner −72 s vs 2025).</p></article>
+    <article class="finding ask"><span class="pill ask">Ask</span><h3>How much of our Regionals dip was the course?</h3><p>Kayaan was 37 s and Emilio 40 s off their New World bests at our Regionals, while Adrian and Christopher ran bests there. New World is fast, so part of that is course. How much decides how hard battles 1 and 4 really are.</p></article>
+  </div>
+</section>
+
+<section id="simulator">
+  <div class="chart-head">
+    <div style="display:grid;gap:6px">
+      <h2>Score simulator</h2>
+      <p class="muted small">Drag any runner's slider to change his time. All 34 scoring teams from the MileSplit virtual meet are re-scored live (top 5 score, 6–7 displace).</p>
+    </div>
+  </div>
+  <div class="presets" role="group" aria-label="Scenarios">
+    <button type="button" data-preset="sb" aria-pressed="true">Season bests</button>
+    <button type="button" data-preset="plan">Four-battle plan</button>
+    <button type="button" data-preset="b2">Battle 2 only</button>
+    <button type="button" data-preset="slump">Bolles 6–7 at Regionals form</button>
+  </div>
+  <p class="small muted" id="presetNote">Every runner at his season best. This is the 65–42 virtual meet.</p>
+  <div class="card scoreboard" id="scoreboard" aria-live="polite"></div>
+  <div class="sim">
+    <div class="card runners" id="gulRunners"><h3 class="g">Gulliver top 7</h3></div>
+    <div class="card runners" id="bolRunners"><h3 class="b">Bolles top 7</h3></div>
+  </div>
+  <details class="card">
+    <summary style="cursor:pointer;font-weight:600">Full team standings for this scenario</summary>
+    <div class="tablewrap" style="margin-top:10px"><table id="standings"><thead><tr><th>Place</th><th>Team</th><th class="num">Points</th><th>Scorers</th></tr></thead><tbody></tbody></table></div>
+  </details>
+</section>
+
+<section id="season">
+  <h2>Season trends</h2>
+  <div class="card" style="display:grid;gap:10px">
+    <div class="chart-head">
+      <h3>Top-5 average by meet</h3>
+      <div class="legend"><span><i class="sw" style="border-color:var(--gul)"></i>Gulliver</span><span><i class="sw dash" style="border-color:var(--bol)"></i>Bolles</span><span class="muted">Higher = faster · hollow = slow course</span></div>
+    </div>
+    <div class="chartbox"><svg id="teamChart" viewBox="0 0 900 330" role="img" aria-label="Top-5 average time by meet for Gulliver and Bolles"></svg></div>
+    <p class="small muted">Both teams dropped about 45 s from their first meet to New World, a fast course. Bolles ran their Regionals on that same course on Nov 13 and averaged 15:50.5, about the same as in October. Our later meets were on other courses, so compare our Regionals (16:20.4) by shape, not by time.</p>
+  </div>
+  <div class="card" style="display:grid;gap:10px">
+    <div class="chart-head">
+      <h3>Runner vs runner</h3>
+      <div class="presets" role="group" aria-label="Matchup" id="matchBtns"></div>
+    </div>
+    <div class="legend" id="runnerLegend"></div>
+    <div class="chartbox"><svg id="runnerChart" viewBox="0 0 900 330" role="img" aria-label="Season times for selected matchup"></svg></div>
+    <p class="small muted" id="matchNote"></p>
+  </div>
+</section>
+
+<section id="battles">
+  <h2>The four battles</h2>
+  <p class="muted">Each battle stacks on the one before it. Battles 1–4 together flip the virtual meet to Gulliver 43, Bolles 47. "Worth" is the change in the gap.</p>
+  <div class="battles" id="battleCards"></div>
+</section>
+
+<section id="rosters">
+  <h2>Rosters</h2>
+  <div class="card" style="display:grid;gap:8px">
+    <h3 class="g">Gulliver: every varsity 5K</h3>
+    <div class="tablewrap"><table id="gulTable"></table></div>
+    <p class="small muted">Green = season best. New World (Oct 16) is a fast course; District (Nov 4) was a slow one. Form compares the last race with the season best.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+    <h3 class="b">Bolles: every 5K</h3>
+    <div class="tablewrap"><table id="bolTable"></table></div>
+    <p class="small muted">2A Region 1 (Nov 13) was run on the New World course. From the Bolles scouting report. Excludes the 2.5-mile Manhattan Invitational. Sharma is listed as class of 2026 on the virtual meet and 2029 in the scouting report; check MileSplit.</p>
+  </div>
+</section>
+
+<section id="questions">
+  <h2>Questions for staff before Friday</h2>
+  <ol class="asks">
+    <li><b>Our Regionals course.</b> Kayaan, Emilio, Nicolas and Tyler were 25–40 s off their New World bests, while Adrian and Christopher ran bests there. New World is fast, so how much of that is course and how much is effort?</li>
+    <li><b>Pack assignments.</b> At Regionals, Christopher (16:30.7) beat Nicolas and Tyler, who finished 0.15 s apart (16:53.85 / 16:53.70). Should Christopher go with Nicolas toward Rigdon and Cleek, and Tyler take Sumner and Barragan?</li>
+    <li><b>Apalachee vs New World.</b> Both teams' bests come from New World. How much slower does Apalachee usually run? It won't change the gap between us, but it sets realistic split targets.</li>
+    <li><b>Adrian's floor.</b> His range is 15:52 to 16:53 (18:31 on the slow District course). Battles 1 and 4 both need him; what keeps him close to his Regionals race?</li>
+    <li><b>Kayaan vs Ches.</b> Kayaan beat Ches by 13 s at New World. Does he race for the win, or sit on Ches and Chandler to keep them behind him?</li>
+    <li><b>Alternate.</b> Vikram Sebastian (17:02.0 best, −30 s on the season) is next up behind Aston (16:41.0) if anyone is sick or hurt.</li>
+  </ol>
+</section>
+
+</section>
+
+<section class="panel" id="p-race-plan" hidden>
+  <div style="display:grid;gap:6px">
+    <h2>Race plan: Apalachee Regional Park 5K</h2>
+    <p class="muted">From the coaches' strategy talk on Nov 16. Two loops, about 5K, net downhill. Shakeout Wednesday, course run Thursday, race Friday.</p>
+  </div>
+  <div class="rule">
+    <span style="color:var(--j-wall)">Hills = maintain rhythm</span>
+    <span style="color:var(--j-reset)">Tops of hills = reset</span>
+    <span style="color:var(--j-press)">Downhills = press</span>
+  </div>
+  <div class="two map-two">
+    <figure class="card mapfig">
+      <a href="map.jpg" target="_blank" rel="noopener" title="Open full-size map"><img src="map.jpg" alt="Apalachee course map with Loop 1 and Loop 2 colored by race job, numbered 1 to 12" loading="lazy"></a>
+      <figcaption class="small muted">Tap the map to open it full size. Follow 1 to 12. The loops share ground, so the same stretch can mean a different job each time. The Wall and the ~1.4K speed bump are placed from the coach's description; confirm them Thursday.</figcaption>
+    </figure>
+    <div class="card">
+      <h3>The 30-second version</h3>
+      <ol class="steps">
+        <li><b>Start to 1K:</b> quick but controlled. Target in front of you, within reach. Let fast starters burn away.</li>
+        <li><b>~1.4K speed bump to the mile:</b> use the downhill to close the gap. Run tangents. Don't get boxed.</li>
+        <li><b>The Wall (1st):</b> don't press it. Maintain rhythm, stay attached.</li>
+        <li><b>Top of the Wall:</b> reset. Coach Chris will be yelling it.</li>
+        <li><b>Downhill into the 2-mile:</b> take the lead of your group and press. Steady gas, not a sprint.</li>
+        <li><b>2-mile hill:</b> maintain rhythm. Keep any gap you opened.</li>
+        <li><b>After the 2-mile:</b> reset again.</li>
+        <li><b>3.5K to 4K downhill:</b> press. Open the gap or catch the next group.</li>
+        <li><b>Final Wall and finish:</b> who wants it more.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Stretch-by-stretch jobs</h3>
+    <div class="tablewrap"><table class="jobs">
+      <thead><tr><th>#</th><th>Stretch</th><th>Job</th><th>What it looks like</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1–2</td><td>Start to 1K (first 800 m all downhill), gentle half-mile climb</td><td><span class="jobtag" style="color:var(--j-reach)">Keep in reach</span></td><td>Quick and controlled. Don't press the climb.</td></tr>
+        <tr><td class="num">3</td><td>Flat to 1K and the forest loop</td><td><span class="jobtag" style="color:var(--j-reach)">Eyes up</span></td><td>Find your target. The middle gets crowded; get around people.</td></tr>
+        <tr><td class="num">4</td><td>~1.4K speed bump to the mile and the river trail</td><td><span class="jobtag" style="color:var(--j-close)">Close the gap</span></td><td>The speed bump is your cue. Make contact before the Wall.</td></tr>
+        <tr><td class="num">5</td><td>The Wall (1st)</td><td><span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span></td><td>Sit behind your group "like you don't exist." If they surge, keep them at arm's length.</td></tr>
+        <tr><td class="num">6</td><td>Top of the Wall, behind the start line</td><td><span class="jobtag" style="color:var(--j-reset)">Reset</span></td><td>Deep breaths, shoulders down, face loose.</td></tr>
+        <tr><td class="num">7</td><td>South edge, long downhill into the 2-mile</td><td><span class="jobtag" style="color:var(--j-press)">Lead and press</span></td><td>People want to relax here. Take the lead and make them hurt.</td></tr>
+        <tr><td class="num">8</td><td>2-mile hill</td><td><span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span></td><td>Chop your steps. If they catch you here, they paid for it.</td></tr>
+        <tr><td class="num">9</td><td>Flat and small loop after the 2-mile</td><td><span class="jobtag" style="color:var(--j-reset)">Reset</span></td><td>It hurts most here. Collect yourself for the last 1,200 m.</td></tr>
+        <tr><td class="num">10</td><td>3.5K to 4K downhill (~500 m)</td><td><span class="jobtag" style="color:var(--j-press)">Press</span></td><td>Open the gap, or catch the next group.</td></tr>
+        <tr><td class="num">11–12</td><td>Final Wall and downhill finish</td><td><span class="jobtag" style="color:var(--j-finish)">Who wants it more</span></td><td>Trust your instincts and your season of racing.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h3>How each job works</h3>
+      <dl class="defs">
+        <dt>Keep in reach</dt><dd>Your target likely goes out faster than you. That's the plan. You can see him, a few steps up, but you didn't match his start.</dd>
+        <dt>Close the gap</dt><dd>Let the downhill do the work. Make contact before the Wall.</dd>
+        <dt>Maintain rhythm</dt><dd>It looks slower; that's smart. Don't slow down while they speed up. Reset faster at the top instead.</dd>
+        <dt>Reset</dt><dd>Your heart rate just spiked and your legs hurt. Normal. Breathe, shake out the shoulders, relax the face.</dd>
+        <dt>Press</dt><dd>Not a head-down surge. Slowly push the gas and let the downhill carry you, leading your group.</dd>
+        <dt>Don't get stuck</dt><dd>Behind someone who isn't your target? Get around him and move up to the group you want.</dd>
+      </dl>
+    </div>
+    <div class="card" style="display:grid;gap:12px;align-content:start">
+      <div>
+        <h3>Why it works</h3>
+        <ul class="notes">
+          <li>Teams go out too fast here every year. Our advantage is being smart and catching people.</li>
+          <li>Right after the Wall everyone wants to relax on the downhill. That's exactly when we press.</li>
+          <li>Making someone who went out too fast run a little faster downhill, then up a hill, is how you break him.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Packs</h3>
+        <ul class="notes">
+          <li><b>Kayaan</b> races the front and keeps Ches and Chandler behind him.</li>
+          <li><b>Emilio + Adrian</b> work together on Sharma, then Chandler.</li>
+          <li><b>Nicolas</b> bridges up to Rigdon and Cleek.</li>
+          <li><b>Tyler + Christopher</b> run down Barragan and Sumner.</li>
+          <li><b>Aston</b> hangs on to Tyler and Christopher.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Coaches on course</h3>
+        <p>Coach Chris is near the top of the Wall at the reset zone. Listen for your name.</p>
+      </div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h3>This week</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Day</th><th>What</th><th>Focus</th></tr></thead>
+        <tbody>
+          <tr><td>Wed</td><td>Shakeout on the course</td><td>Easy. At each numbered spot, picture your target and your job. Don't press.</td></tr>
+          <tr><td>Thu</td><td>Course run</td><td>Find the speed bump, the Wall and the tangents.</td></tr>
+          <tr><td>Fri</td><td><b>Race</b></td><td>Find your stick-with runner in the first 1K.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>Pre-race checklist</h3>
+      <ul class="checks">
+        <li><input type="checkbox" id="ck1"><label for="ck1">Know your stick-with and must-beat runners by face and jersey</label></li>
+        <li><input type="checkbox" id="ck2"><label for="ck2">Memorize the cues: speed bump, the Wall, reset at the top, press into the 2-mile, press 3.5K to 4K</label></li>
+        <li><input type="checkbox" id="ck3"><label for="ck3">Practice the reset: 3 deep breaths, shoulders down, face loose</label></li>
+        <li><input type="checkbox" id="ck4"><label for="ck4">Walk the tangents on Thursday</label></li>
+        <li><input type="checkbox" id="ck5"><label for="ck5">First-timers on this course: stay near a teammate who has run it</label></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Q&amp;A from the meeting</h3>
+    <p><b>If they push up the first hill, do we go with them or catch up after?</b> Let them push. Keep them at arm's length, don't let a gap open by slowing down while they speed up, then reset faster at the top and use the downhill to catch up and press.</p>
+    <p style="margin-top:8px"><b>So we maintain pace on the hill and reset after it?</b> Correct.</p>
+  </div>
+</section>
+<section class="panel" id="p-kayaan" data-runner="Kayaan Ghaffar" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#1 · Class of 2028 · Protects the front</div>
+      <h2 class="rname">Kayaan Ghaffar</h2>
+      <p class="rrole">Front-runner: win it and keep Bolles&#x27; top 2 behind you.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">15:19.00</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">1st overall · 1 pt</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Frederick Gunther (Pensacola Catholic, 15:27.3), the only one within 10 s</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Aaron Ches (15:32.0) and Aidan Chandler (15:37.5): each one that passes you is a 2-point swing</p></div>
+      
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Beat Ches by 13 s in the one race we shared (New World, Oct 16).</li><li>Ran 15:56 at our Regionals, 37 s off his New World best. New World is a fast course, so some of that is the course.</li><li>Palm League (16:24) and District (17:04, slow course) show he can have off days. A steady first mile matters.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Run your own race. Get out quick and controlled; no need to lead the downhill.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Settle in at the front with Gunther. Know where Ches is.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Rhythm, not effort. Don&#x27;t let a surge up the Wall pull you into the red.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>This is your first big chance to put real seconds on the field.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Second press. Break Gunther here if he&#x27;s still with you.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>Win it. You can&#x27;t score better than 1 point, so the team job is simple: Ches and Chandler finish behind you.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Kayaan Ghaffar season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Gunther (Pensacola Catholic)</td><td class="num">15:27.30</td><td class="num">8.3 s behind you</td><td>Main rival for the win</td></tr><tr><td>Aaron Ches (Bolles #1)</td><td class="num">15:32.00</td><td class="num">13.0 s behind you</td><td>Must stay behind you</td></tr><tr><td>Aidan Chandler (Bolles #2)</td><td class="num">15:37.50</td><td class="num">18.5 s behind you</td><td>Must stay behind you</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-emilio" data-runner="Emilio Perez-Garcia" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#2 · Class of 2027 · Battles 1 and 4</div>
+      <h2 class="rname">Emilio Perez-Garcia</h2>
+      <p class="rrole">Lead our 2-3 pack against Bolles&#x27; 2-3. Battles 1 and 4 run through you.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">15:49.00</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">7th · 7 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Aidan Chandler (Bolles #2, 15:37.5), 11.5 s ahead of you on paper</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Armaan Sharma (Bolles #3, 15:50.0), dead even with you</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Adrian</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Season best 15:49 at New World. Ran 16:29 at our Regionals, 40 s off.</li><li>Sharma has broken 16:10 five races in a row and was within 2 s on the New World course both times. He&#x27;s a must-beat every race.</li><li>Chandler got faster on the New World course: 15:42 in October, 15:37.5 at their Regionals in November.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Chandler and Sharma in front of you but within reach. Don&#x27;t go with Ches.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Speed bump = go. Use the downhill to make contact with Chandler, and bring Adrian.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Sit on Chandler. Rhythm only.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Take the lead of the group with Adrian and press. Make Sharma hurt.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Press again to break Chandler.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>Never let Sharma back past you.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Emilio Perez-Garcia season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Aidan Chandler (Bolles #2)</td><td class="num">15:37.50</td><td class="num">11.5 s ahead</td><td>Target: close on him</td></tr><tr><td>Cole Galuski (Berkeley Prep)</td><td class="num">15:40.00</td><td class="num">9.0 s ahead</td><td>Passing = 1 pt for us</td></tr><tr><td>Michael Gomez (FAU HS)</td><td class="num">15:41.52</td><td class="num">7.5 s ahead</td><td>Passing = 1 pt for us</td></tr><tr><td>Armaan Sharma (Bolles #3)</td><td class="num">15:50.00</td><td class="num">1.0 s behind</td><td>Must beat</td></tr><tr><td>Adrian Iziliaev (teammate)</td><td class="num">15:52.16</td><td class="num">2.2 s behind</td><td>Run together</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-adrian" data-runner="Adrian Iziliaev" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#3 · Class of 2027 · Battles 1 and 4</div>
+      <h2 class="rname">Adrian Iziliaev</h2>
+      <p class="rrole">Emilio&#x27;s partner. Get ahead of Sharma, then go after Chandler together.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">15:52.16</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">9th · 9 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Emilio Perez-Garcia (teammate, 15:49.0) and Armaan Sharma (Bolles #3, 15:50.0)</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Armaan Sharma (Bolles #3), only 2.2 s ahead of you</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Emilio</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Season best 15:52.16 came at our Regionals. He&#x27;s peaking at the right time.</li><li>His range is wide: 15:52 to 16:53 this season (18:31 on the slow District course).</li><li>At New World he ran 16:28 and finished behind Barragan and Sumner. This time he needs to be up with Sharma.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Sharma and Emilio in sight, a few steps ahead at most.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Close on Sharma and get onto Emilio&#x27;s shoulder.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Attached to Sharma. Don&#x27;t push the hill.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Take turns leading with Emilio. Press Sharma off the back.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>If Sharma is still there, this is where you drop him. Then look for Chandler.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>Who wants it more. Beating Sharma alone is worth 2 points.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Adrian Iziliaev season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Aidan Chandler (Bolles #2)</td><td class="num">15:37.50</td><td class="num">14.7 s ahead</td><td>Stretch target</td></tr><tr><td>Emilio Perez-Garcia (teammate)</td><td class="num">15:49.00</td><td class="num">3.2 s ahead</td><td>Run together</td></tr><tr><td>Armaan Sharma (Bolles #3)</td><td class="num">15:50.00</td><td class="num">2.2 s ahead</td><td>Must beat</td></tr><tr><td>Lawson Phillips (Florida High)</td><td class="num">15:54.00</td><td class="num">1.8 s behind</td><td>Keep behind you</td></tr><tr><td>Aidan Alam (McKeel)</td><td class="num">15:55.00</td><td class="num">2.8 s behind</td><td>Keep behind you</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-nicolas" data-runner="Nicolas Altaba" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#4 · Class of 2027 · Battles 2 and 3</div>
+      <h2 class="rname">Nicolas Altaba</h2>
+      <p class="rrole">The swing man. You&#x27;re in battles 2 and 3, worth more points than anyone else on the team.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">16:18.00</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">21st · 21 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Brantley Rigdon and Wyatt Cleek (Bolles #4-5, 16:02.8 / 16:03.0). They&#x27;ll run as a pair</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Vincent Barragan (Bolles #6, 16:17.0) and Liam Sumner (Bolles #7, 16:23.0)</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Bridges up from Tyler and Christopher</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Lost to Barragan by just 1.0 s at New World (16:18 vs 16:17).</li><li>Rigdon and Cleek ran 16:02.8 and 16:04.9 on the New World course at their Regionals. Rigdon was 52 s faster than in October. Treat them as a pair.</li><li>Ran 16:53.85 at our Regionals, 0.15 s from Tyler. The two of you naturally run together.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Rigdon/Cleek pair in front of you but within reach. Barragan right around you.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Drop Barragan and start closing on the Rigdon/Cleek pair.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Make contact with Rigdon/Cleek by the top if you can. Rhythm, not effort.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Take the lead and press. They went out harder than you did.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Final press to get past both of them. That alone is an 8-point swing.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>Don&#x27;t let either of them back in.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Nicolas Altaba season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Brantley Rigdon (Bolles #4)</td><td class="num">16:02.80</td><td class="num">15.2 s ahead</td><td>Target pair</td></tr><tr><td>Wyatt Cleek (Bolles #5)</td><td class="num">16:03.00</td><td class="num">15.0 s ahead</td><td>Target pair</td></tr><tr><td>Vincent Barragan (Bolles #6)</td><td class="num">16:17.00</td><td class="num">1.0 s ahead</td><td>Must beat</td></tr><tr><td>Liam Sumner (Bolles #7)</td><td class="num">16:23.00</td><td class="num">5.0 s behind</td><td>Must stay behind</td></tr><tr><td>Tyler Keating (teammate)</td><td class="num">16:29.00</td><td class="num">11.0 s behind</td><td>Pull him up</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-tyler" data-runner="Tyler Keating" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#5 · Class of 2028 · Battle 2</div>
+      <h2 class="rname">Tyler Keating</h2>
+      <p class="rrole">Our 5th scorer. Run as a pair with Christopher and run down Bolles&#x27; 6-7.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">16:29.00</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">27th · 27 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Christopher Arana (teammate, 16:30.7). Work as a pair</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Liam Sumner (Bolles #7, 16:23.0, 6 s ahead), then Vincent Barragan (Bolles #6, 16:17.0, 12 s ahead)</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Christopher</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Season best 16:29 at New World, 6 s behind Sumner and 12 s behind Barragan that day.</li><li>At their Regionals on the same course, Sumner ran 16:37 and Barragan 17:24.8. Both were slower than your New World time.</li><li>Ran 16:53.70 at our Regionals, right with Nicolas.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Sumner and Barragan in front but within reach. Christopher right beside you.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Speed bump = go. Close on Sumner first.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Attached to Sumner/Barragan. Don&#x27;t fight the hill.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>You and Christopher take the lead and press them. This is battle 2.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Second press. Open a gap they can&#x27;t close on the last Wall.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>As our 5th man, you&#x27;re the score. Every place counts.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Tyler Keating season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Vincent Barragan (Bolles #6)</td><td class="num">16:17.00</td><td class="num">12.0 s ahead</td><td>Must beat</td></tr><tr><td>Nicolas Altaba (teammate)</td><td class="num">16:18.00</td><td class="num">11.0 s ahead</td><td>Your stretch marker</td></tr><tr><td>Liam Sumner (Bolles #7)</td><td class="num">16:23.00</td><td class="num">6.0 s ahead</td><td>Must beat</td></tr><tr><td>Christopher Arana (teammate)</td><td class="num">16:30.74</td><td class="num">1.7 s behind</td><td>Run together</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-christopher" data-runner="Christopher Arana" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#6 · Class of 2028 · Battle 2</div>
+      <h2 class="rname">Christopher Arana</h2>
+      <p class="rrole">Tyler&#x27;s partner. Two of you past Bolles&#x27; 6-7 swings the meet by 9 points.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">16:30.74</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">29th · 29 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Tyler Keating (teammate, 16:29.0)</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Liam Sumner (Bolles #7, 16:23.0, 7.7 s ahead) and Vincent Barragan (Bolles #6, 16:17.0, 13.7 s ahead)</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Tyler</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Season best 16:30.74 came at our Regionals: 58 s faster than his first race, the biggest drop on the team.</li><li>Didn&#x27;t race New World, so he has never raced Bolles this year. They won&#x27;t know him.</li><li>Beat Nicolas and Tyler by 23 s at Regionals. Staff may move him up toward Rigdon and Cleek.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Tyler at your side, Sumner and Barragan in sight.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Close with Tyler. Get around anyone who isn&#x27;t your target.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Rhythm. Stay glued to Tyler.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Share the lead with Tyler and press Bolles&#x27; 6-7.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Press again. If Tyler is struggling, take him with you.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>If anyone ahead of you falters, you&#x27;re our 5th scorer.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Christopher Arana season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Vincent Barragan (Bolles #6)</td><td class="num">16:17.00</td><td class="num">13.7 s ahead</td><td>Must beat</td></tr><tr><td>Liam Sumner (Bolles #7)</td><td class="num">16:23.00</td><td class="num">7.7 s ahead</td><td>Must beat</td></tr><tr><td>Tyler Keating (teammate)</td><td class="num">16:29.00</td><td class="num">1.7 s ahead</td><td>Run together</td></tr><tr><td>Aston Conrad (teammate)</td><td class="num">16:41.00</td><td class="num">10.3 s behind</td><td>Pull him up</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<section class="panel" id="p-aston" data-runner="Aston Conrad" hidden>
+  <div class="runner-head">
+    <div class="rh-main">
+      <div class="eyebrow">#7 · Class of 2028 · Displacer / insurance</div>
+      <h2 class="rname">Aston Conrad</h2>
+      <p class="rrole">Displacer and insurance. If anyone ahead has a bad day, you become our 5th scorer.</p>
+    </div>
+    <div class="rh-stats">
+      <div><span class="label">Season best</span><span class="big num">16:41.00</span></div>
+      <div><span class="label">Virtual meet</span><span class="big num">36th · 36 pts</span></div>
+      <div><span class="label">Last race</span><span class="big num" data-last></span><span data-form></span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card job">
+      <div class="jobrow"><span class="pill steady">Stick with</span><p>Christopher Arana and Tyler Keating (teammates, 16:29-16:31) as long as you can</p></div>
+      <div class="jobrow"><span class="pill risk">Must beat</span><p>Liam Sumner (Bolles #7, 16:23.0, 18 s ahead): beating him pushes Bolles back</p></div>
+      <div class="jobrow"><span class="pill opp">Partner</span><p>Hangs on to Tyler and Christopher</p></div>
+    </div>
+    <div class="card">
+      <h3>Notes from the data</h3>
+      <ul class="notes"><li>Season best 16:41 at New World.</li><li>Sumner ran 16:37 at Bolles&#x27; Regionals on the same course, only 4 s ahead of your New World time. Barragan ran 17:24.8.</li><li>If anyone ahead of you has a bad day, you become our 5th scorer. Every place counts.</li></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your race, stretch by stretch</h3>
+    <ol class="plan"><li><span class="jobdot" style="background:var(--j-reach)"></span><div><b>Start to 1K</b> <span class="jobtag" style="color:var(--j-reach)">Keep in reach</span><br>Christopher and Tyler within reach. Don&#x27;t panic if they&#x27;re a few seconds up.</div></li><li><span class="jobdot" style="background:var(--j-close)"></span><div><b>1.4K to the mile</b> <span class="jobtag" style="color:var(--j-close)">Close the gap</span><br>Close on the Tyler/Christopher pair. Every runner you pass adds points to another team.</div></li><li><span class="jobdot" style="background:var(--j-wall)"></span><div><b>Wall #1</b> <span class="jobtag" style="color:var(--j-wall)">Maintain rhythm</span><br>Rhythm. Stay attached to whoever you&#x27;ve caught.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>Downhill into 2-mile</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Press. Sumner went out harder; reel him in.</div></li><li><span class="jobdot" style="background:var(--j-press)"></span><div><b>3.5K to 4K</b> <span class="jobtag" style="color:var(--j-press)">Press</span><br>Last chance to pick up places on the downhill.</div></li><li><span class="jobdot" style="background:var(--j-finish)"></span><div><b>Final Wall and finish</b> <span class="jobtag" style="color:var(--j-finish)">Who wants it more</span><br>Fight for every place. Displacers decide close meets.</div></li></ol>
+    <p class="small muted">Stretches match the numbered course map on the <a href="#race-plan">Race plan</a> tab.</p>
+  </div>
+  <div class="card" style="display:grid;gap:8px">
+      <h3>Your season vs your Bolles targets</h3>
+      <div class="legend" data-legend></div>
+      <div class="chartbox"><svg data-chart viewBox="0 0 900 330" role="img" aria-label="Aston Conrad season times vs Bolles targets"></svg></div>
+      <p class="small muted">Higher = faster. Solid = Gulliver, dashed = Bolles. Hover a dot for the meet and time.</p>
+  </div>
+  <div>
+    <div class="card">
+      <h3>Runners near you (season bests)</h3>
+      <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Gap</th><th>Why it matters</th></tr></thead><tbody><tr><td>Liam Sumner (Bolles #7)</td><td class="num">16:23.00</td><td class="num">18.0 s ahead</td><td>Target</td></tr><tr><td>Tyler Keating (teammate)</td><td class="num">16:29.00</td><td class="num">12.0 s ahead</td><td>Hang on</td></tr><tr><td>Christopher Arana (teammate)</td><td class="num">16:30.74</td><td class="num">10.3 s ahead</td><td>Hang on</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div>Sources: MileSplit FL virtual meet (season bests, team and individual, pulled Nov 14, 2026); Gulliver varsity progression table; Bolles Top-7 Progression scouting report (MileSplit, pulled Nov 16, 2026); coaches' race-strategy talk, Nov 16.</div>
+  <div>The simulator uses each team's top 7 from the virtual meet. Bolles' and Gulliver's scores match MileSplit exactly; a few other teams differ by up to 4 points because of how their names wrapped in the export. Cross-course time comparisons are approximate. New World is a fast course, and Bolles' 2A Region 1 was run on it (per Gulliver staff).</div>
+</footer>
+</div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+(function () {
+"use strict";
+const FIELD = {"teams":["American Heritage MS/HS (Boca Delray)","Angeline Academy of Innovation- High","Berkeley Prep HS","Bolles HS","Calvary Christian (Clearwater)","Calvary Christian Academy (Ft. Lauderdale)","Cardinal Mooney HS","Cocoa Beach HS","Dunedin HS","Eastside HS","Edgewood MS/HS","Episcopal School of Jacksonville","FAU High School","First Academy (Orlando)","Florida High School","Gulliver Prep","Hardee HS","Keys Gate Charter HS","Keystone Heights HS","Kirkland Ranch Academy of Innovation","Lake Highland Prep HS","McKeel Academy","NSU University","Nature Coast Tech","Newberry HS","Pensacola Catholic HS","Ransom Everglades School","Suwannee HS","The King's Academy","Trinity Catholic HS","Trinity Prep","Wellen Park High School","West Shore HS","Wolfson High School"],"f":[["Kayaan Ghaffar",15,919.0],["Emilio Perez-Garcia",15,949.0],["Adrian Iziliaev",15,952.16],["Nicolas Altaba",15,978.0],["Tyler Keating",15,989.0],["Christopher Arana",15,990.74],["Aston Conrad",15,1001.0],["Frederick Gunther",25,927.3],["Mason Pohovey",25,1019.2],["Thomas Randall",25,1097.2],["Oliver Stewart",25,1109.0],["Finnian Baker",25,1110.8],["Patrick Frey",25,1114.73],["Anderson Edler",25,1115.1],["Aaron Ches",3,932.0],["Aidan Chandler",3,937.5],["Armaan Sharma",3,950.0],["Brantley Rigdon",3,962.8],["Wyatt Cleek",3,963.0],["Vincent Barragan",3,977.0],["Liam Sumner",3,983.0],["Cole Galuski",2,940.0],["Adrian Nel",2,1019.9],["Rai Mehta",2,1029.3],["Colin Maloney",2,1067.39],["Tim Paige",2,1071.0],["Louis Pisano",2,1130.0],["Fisher Livingston",2,1148.86],["Michael Gomez",12,941.52],["Robert Joines",12,986.9],["Thomas Carrizo",12,1049.56],["Abel Roque",12,1103.39],["Aiden Newton",12,1126.45],["Daniel Angel",12,1149.02],["Joseph Truelove",12,1152.05],["Lawson Phillips",14,954.0],["Yoshi Hutt",14,1045.2],["Ezekiel Wyman",14,1103.9],["Christian Acree",14,1111.4],["Elijah Rhodes",14,1116.0],["Grant Phillips",14,1139.0],["Conner Fleming",14,1177.6],["Aidan Alam",21,955.0],["Cal Howard",21,985.9],["Gideon Secrist",21,1057.0],["Michael Danner",21,1063.0],["Nolan O'Steen",21,1070.57],["Lucas Caram-Andruet",21,1082.0],["Alexander Costilla",21,1096.0],["Grayson Smith",11,957.8],["Rick Schultz",11,1001.45],["Will Bunch",11,1006.7],["Dylan Patterson",11,1014.1],["Chase Fallucco",11,1018.9],["Teddy Formoso",11,1051.7],["Joshua Oche",11,1094.0],["Luke Engels",9,963.1],["Griffin Morris",9,986.0],["Chesley McDonald",9,1006.7],["Elijah Stringer",9,1026.0],["Benjamin White",9,1040.3],["Ethan Nonato",9,1073.42],["Omri Brauner",9,1132.0],["Lars Manning",7,970.14],["Elijah Daly",7,1009.74],["Asher Cerveny",7,1011.3],["Chase Cobb",7,1052.25],["Jackson Daly",7,1108.56],["Mark Masters",7,1170.1],["Noah Sabol",7,1171.09],["Luke LaHaye",4,975.0],["Eden Seagraves",4,994.0],["Maximus Brown",4,997.0],["Logan Milo",4,1014.0],["Nathan Sauer",4,1020.0],["Cooper Dixon",4,1055.0],["Timothy Merly",4,1074.67],["Noah Carpenter",23,975.4],["Gage Parrott",23,1096.0],["Jacob Conway",23,1192.7],["Donald Gill",23,1283.1],["Jackson French",23,1505.6],["Preston Moore",23,1593.1],["Watson Dunham",24,976.6],["Logan Smith",24,996.2],["Caleb Mobbs",24,1054.7],["Gage Pierce",24,1055.3],["Lucas Arnold",24,1057.2],["Tyler Tompkins",24,1065.9],["Lane Fussell",24,1197.9],["Noah Yara",18,985.4],["Hunter Gray",18,1016.0],["James Thomas",18,1050.1],["Trenton Noble",18,1100.0],["John Cusack",18,1106.9],["Ryeland Wahl",18,1108.0],["Mason Gray",18,1117.0],["Jacob White",32,990.0],["Landon Plechaty",32,1013.0],["Cal Daut",32,1029.06],["Brian Duong",32,1110.7],["Brady Jones",32,1123.27],["Andrew Vuong",32,1128.27],["William Estevez",32,1130.64],["Daniel Stoltzfoos",27,992.4],["Brant Johnson",27,1018.2],["Kale Skinner",27,1043.2],["Crew Wilkins",27,1054.8],["Jonah Lord",27,1060.9],["Josiah Daniels",27,1150.3],["Aksel Perez-Lugo",27,1175.0],["Ivan Lefrak",26,996.05],["Arthur Barrington",26,1083.52],["Connor Wiggins",26,1087.82],["Auguste Houlle",26,1097.54],["Merritt Perlyn",26,1122.02],["Rishi Mavinkurve",26,1124.17],["Giacomo Chinoy",26,1171.79],["Santiago Salazar",20,996.71],["Evan Okaty",20,1014.3],["Alex Betancourt",20,1030.9],["Zachary Chaet",20,1039.7],["Gabriel Hanna",20,1043.6],["Colten Scheuplein",20,1043.7],["Cavan Guest",20,1068.0],["Eli Valdez",16,1003.0],["Asa Slager",16,1013.0],["Victor Molina-Perez",16,1090.0],["Luciano Guevara-",16,1111.2],["Antonio Gutierrez",16,1133.42],["Christopher Deemer",16,1147.0],["Angel Lucatero",16,1167.0],["Micah Oliver",19,1003.2],["Zealand Sanders",19,1036.25],["Jesiah Williams",19,1096.9],["Cole Davenport",19,1143.7],["Abbott Murphy",19,1145.42],["Ethan Hopkins",19,1153.8],["Porter Sanders",19,1167.2],["Chase Marshall",31,1004.4],["Larry Stubbings",31,1021.84],["Zane Clark",31,1045.1],["Josh Myers",31,1106.06],["Kolton Kozlowski",31,1114.48],["Lincoln Hoyle",31,1176.54],["Kaid Nightingale",31,1192.9],["Ryan Robinson",33,1005.6],["Beckett Nelson",33,1011.1],["Joseph Barry",33,1012.1],["Nathan Kilgore",33,1017.2],["Joseph Morgenthal",33,1040.5],["Noah Doudna",33,1047.8],["Rian Naik",33,1052.0],["Darian Rodriguez",17,1005.87],["Juan Huete",17,1077.04],["Mark Leguizamon",17,1077.67],["Elier Padilla",17,1107.98],["Eric Vasquez",17,1118.44],["Aaran Contreras",17,1147.04],["Jovanni Morales",17,1184.91],["Noah Carter",22,1008.42],["Valentino Ferris",22,1041.28],["Michael Bridges",22,1055.9],["Nasir Sayani",22,1063.08],["Andres Ferris",22,1078.44],["Miles Kavall",22,1163.68],["Ryan Gupta",22,1208.94],["Braden Workman",8,1009.1],["Owen Kalshoven",8,1009.2],["Jack Greene",8,1012.8],["Carson Bews",8,1030.2],["Jeffery Tanner Turley",8,1031.1],["William Vricos",8,1035.9],["Biko Bodammer",8,1069.0],["Matthew Hill",6,1025.43],["Isaiah Leake",6,1028.6],["Mason Leake",6,1129.31],["Weston Taylor",6,1140.27],["Dixon Reith",6,1140.32],["Jackson Hill",6,1196.51],["Brennan Love",6,1264.83],["Nathaniel Sage",10,1025.74],["Varun Sriramineni",10,1061.08],["Mateo Goyco-Shannon",10,1080.74],["Preston Dehuff",10,1111.2],["Allan Aj",10,1117.83],["Kalvin Coloma",10,1150.67],["Daniel Beck",10,1174.28],["Lucas Le Douran",30,1030.48],["Gage Bittenbinder",30,1046.2],["William O'Connor",30,1068.1],["Jonathan Winkler",30,1115.9],["Arthur O'Connor",30,1154.55],["Peter Van Dijk",30,1213.0],["Sami Haddadin",30,1217.7],["Joseph Schiro",28,1033.79],["Colton Osterberg",28,1056.31],["Tyler Gast",28,1082.3],["Matthew Wallace",28,1126.02],["Brent Diaz",28,1131.26],["Caden Hamilton",28,1194.71],["Grayson Prince",28,1195.81],["Dominic Sadonis",1,1038.1],["Andrew Quinlan",1,1066.7],["Elliott Gjertsen",1,1097.4],["Julian Novak",1,1142.1],["Austin McLean",1,1153.5],["Abhay Lingala",1,1171.6],["William Stone",1,1192.0],["Lucas Serino",0,1044.87],["Anthony Barajas",0,1049.99],["Tyler Schiff",0,1061.96],["Dean Sincavage",0,1108.62],["Jonah coby",0,1166.12],["Julian Masrieh",0,1174.16],["Liam Thevenot",0,1201.39],["Danny Hage",5,1050.0],["Elliot Macki",5,1064.6],["Tristan Van Tine",5,1069.45],["Michael Woodstock",5,1079.0],["Joseph Falcone",5,1095.0],["Ethan Macki",5,1116.0],["Elijah Kellem",5,1128.0],["Edward Zinnie",29,1067.6],["Andrew Gleaton",29,1083.6],["Christopher Hughes",29,1100.0],["Kylen Mitchell",29,1145.7],["William LaTour",29,1146.8],["James Dingle",29,1155.1],["Alexander Koch",29,1219.9],["Peyton McAndrew",13,1081.68],["Joseph Jebailey",13,1084.17],["Benjamin Duffey",13,1105.13],["Peyton McAndrews",13,1111.6],["Maxwell Perrupato",13,1118.92],["Chase Fouraker",13,1167.24],["Jacob Visser",13,1172.89]]};
+
+const fmt = s => { if (s == null || isNaN(s)) return "—"; const m = Math.floor(s / 60); const r = s - m * 60; return m + ":" + (r < 10 ? "0" : "") + r.toFixed(2); };
+const fmt1 = s => { const m = Math.floor(s / 60); const r = s - m * 60; return m + ":" + (r < 10 ? "0" : "") + r.toFixed(1); };
+const T = str => { if (!str) return null; const [m, s] = str.split(":"); return +m * 60 + +s; };
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- season data ----------
+const GMEETS = [["Horse Park","2026-09-05"],["Spanish River","2026-09-18"],["STU","2026-09-26"],["Snake Bite","2026-10-10"],["New World","2026-10-16"],["Palm League","2026-10-22"],["District","2026-11-04",true],["Regionals","2026-11-12"]];
+const BMEETS = [["Cecil Field","2026-08-21"],["FL Horse Park","2026-09-05"],["adidas XC Chall.","2026-09-18"],["Bale N Trail","2026-09-26"],["New World Fall","2026-10-16"],["2A District 2","2026-11-06"],["2A Region 1","2026-11-13"]];
+const GUL = [
+  {n:"Kayaan Ghaffar", s:"Kayaan", t:["16:10.44","15:55.68",null,"15:33.73","15:19.00","16:24.54","17:04.50","15:56.46"]},
+  {n:"Emilio Perez-Garcia", s:"Emilio", t:["16:36.55","16:35.60","16:33.57","16:07.23","15:49.00","16:29.36","17:08.45","16:29.00"]},
+  {n:"Adrian Iziliaev", s:"Adrian", t:["16:28.21","15:54.78",null,"16:53.83","16:28.00","16:17.23","18:31.34","15:52.16"]},
+  {n:"Nicolas Altaba", s:"Nicolas", t:["17:26.31","17:24.17","17:28.84","17:05.86","16:18.00",null,"18:35.48","16:53.85"]},
+  {n:"Tyler Keating", s:"Tyler", t:["17:23.33",null,"17:51.25","17:22.46","16:29.00","17:07.25","18:17.71","16:53.70"]},
+  {n:"Christopher Arana", s:"Christopher", t:["17:28.93",null,null,"17:01.43",null,null,"18:14.69","16:30.74"]},
+  {n:"Aston Conrad", s:"Aston", t:["17:26.95","17:14.40","17:04.25","16:59.33","16:41.00","17:11.22","17:58.67","17:06.69"]},
+  {n:"Vikram Sebastian", s:"Vikram", alt:true, t:["17:40.46","17:19.66","17:33.49","17:30.01","17:02.00","17:09.99",null,null]},
+  {n:"Nathan Brooks", s:"Nathan", alt:true, t:[null,null,"17:51.66",null,"17:17.00","17:08.33",null,null]},
+  {n:"Adrian Bernstein", s:"A. Bernstein", alt:true, t:["17:49.23","17:57.12","17:51.47","17:30.61","17:34.00","17:44.46",null,null]}
+];
+const BOL = [
+  {n:"Aaron Ches", s:"Ches", t:[null,null,"16:22.20","16:13.80","15:32.00","16:04.00","15:35.50"]},
+  {n:"Aidan Chandler", s:"Chandler", t:["16:28.00","16:18.49","16:08.90","15:56.50","15:42.00","16:47.00","15:37.50"]},
+  {n:"Armaan Sharma", s:"Sharma", t:["16:44.00",null,"16:01.50","16:09.10","15:50.00","16:04.00","15:51.90"]},
+  {n:"Brantley Rigdon", s:"Rigdon", t:["16:04.00","16:12.52",null,"18:17.20","16:55.00","16:28.00","16:02.80"]},
+  {n:"Wyatt Cleek", s:"Cleek", t:["16:52.00","17:13.50","16:27.70","16:23.80","16:03.00","16:21.00","16:04.90"]},
+  {n:"Vincent Barragan", s:"Barragan", t:["17:00.00","16:46.70","16:43.20","16:33.30","16:17.00","16:29.00","17:24.80"]},
+  {n:"Liam Sumner", s:"Sumner", t:["17:35.00","17:00.54","17:01.40","16:45.20","16:23.00","16:36.00","16:37.00"]}
+];
+[GUL, BOL].forEach(arr => arr.forEach(r => { r.v = r.t.map(T); const xs = r.v.filter(x => x != null); r.sbv = Math.min(...xs); r.last = [...r.v].reverse().find(x => x != null); }));
+const GTEAM = ["16:48.97","16:36.02","17:18.00","16:31.11","16:04.60","16:41.34","17:44.80","16:20.41"].map(T);
+const BTEAM = ["16:37.6","16:42.4","16:20.7","16:15.3","15:52.8","16:17.2","15:50.5"].map(T);
+
+// ---------- simulator ----------
+const TEAMS = FIELD.teams;
+const GI = TEAMS.indexOf("Gulliver Prep"), BI = TEAMS.indexOf("Bolles HS");
+const base = FIELD.f.map(([n, t, tm]) => ({ n, t, tm }));
+const simG = base.filter(r => r.t === GI).sort((a, b) => a.tm - b.tm);
+const simB = base.filter(r => r.t === BI).sort((a, b) => a.tm - b.tm);
+const cur = new Map(); // name -> time
+function resetTo(map) { [...simG, ...simB].forEach(r => cur.set(r.n, map && map[r.n] != null ? map[r.n] : r.tm)); }
+
+function score() {
+  const rs = base.map(r => ({ n: r.n, t: r.t, tm: (r.t === GI || r.t === BI) ? cur.get(r.n) : r.tm }));
+  rs.sort((a, b) => a.tm - b.tm);
+  const cnt = {}; const sc = [];
+  rs.forEach(r => { cnt[r.t] = (cnt[r.t] || 0) + 1; if (cnt[r.t] <= 7) sc.push(r); });
+  for (let i = 0; i < sc.length;) { let j = i; while (j + 1 < sc.length && Math.abs(sc[j + 1].tm - sc[i].tm) < 1e-9) j++; const p = (i + j + 2) / 2; for (let k = i; k <= j; k++) sc[k].p = p; i = j + 1; }
+  const team = {}; sc.forEach(r => (team[r.t] = team[r.t] || []).push(r));
+  const totals = Object.entries(team).filter(([, v]) => v.length >= 5).map(([t, v]) => ({ t: +t, pts: v.slice(0, 5).reduce((a, r) => a + r.p, 0), v }));
+  totals.sort((a, b) => a.pts - b.pts || a.v[5]?.p - b.v[5]?.p);
+  const place = {}; sc.forEach(r => place[r.n + "|" + r.t] = r.p);
+  return { totals, place };
+}
+
+const PRESETS = {
+  sb: { note: "Every runner at his season best. This is the 65–42 virtual meet.", map: {} },
+  plan: { note: "Battles 1–4 from the race packet: Emilio and Adrian just ahead of Chandler, Nicolas just ahead of Rigdon, Tyler and Christopher just ahead of Barragan. Bolles at their bests.",
+    map: { "Emilio Perez-Garcia": T("15:36.50"), "Adrian Iziliaev": T("15:37.00"), "Nicolas Altaba": T("16:02.30"), "Tyler Keating": T("16:16.00"), "Christopher Arana": T("16:16.20") } },
+  b2: { note: "Only battle 2: Nicolas, Tyler and Christopher finish just ahead of Barragan. Everyone else at season bests. The pack alone cuts the gap from 23 to 14.",
+    map: { "Nicolas Altaba": T("16:16.60"), "Tyler Keating": T("16:16.00"), "Christopher Arana": T("16:16.20") } },
+  slump: { note: "Gulliver at season bests; Barragan (17:24.8) and Sumner (16:37.0) at their Regionals times, run on the same course as their bests. Shows how much Bolles' depth matters.", map: { "Vincent Barragan": T("17:24.80"), "Liam Sumner": T("16:37.00") } }
+};
+
+function buildRows(list, el, cls) {
+  list.forEach(r => {
+    const row = document.createElement("div"); row.className = "rrow " + cls;
+    const id = "sl-" + r.n.replace(/[^a-z]/gi, "");
+    row.innerHTML = `<label class="nm" for="${id}" title="${r.n}">${r.n}</label>
+      <input type="range" id="${id}" min="-40" max="80" step="0.1" value="0" aria-describedby="${id}-t">
+      <span class="tm" id="${id}-t"></span><span class="pl" id="${id}-p"></span>`;
+    el.appendChild(row);
+    row.querySelector("input").addEventListener("input", e => { cur.set(r.n, r.tm + +e.target.value); markPreset(null); render(); });
+    r.el = row;
+  });
+}
+buildRows(simG, document.getElementById("gulRunners"), "gul");
+buildRows(simB, document.getElementById("bolRunners"), "bol");
+
+function markPreset(key) {
+  document.querySelectorAll("[data-preset]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.preset === key)));
+  if (!key) document.getElementById("presetNote").textContent = "Custom scenario. Pick a button above to reset.";
+}
+document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => {
+  const p = PRESETS[b.dataset.preset]; resetTo(p.map); markPreset(b.dataset.preset);
+  document.getElementById("presetNote").textContent = p.note; render();
+}));
+
+const ord = n => { const s = ["th","st","nd","rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+function render() {
+  const { totals, place } = score();
+  const g = totals.find(x => x.t === GI), b = totals.find(x => x.t === BI);
+  const sc = x => x.v.slice(0, 5).map(r => r.p % 1 ? r.p.toFixed(1) : r.p).join("+") + " (" + x.v.slice(5, 7).map(r => r.p % 1 ? r.p.toFixed(1) : r.p).join("+") + ")";
+  const diff = g.pts - b.pts;
+  const pos = totals.indexOf(g) + 1;
+  const verdict = diff < 0 ? `<div class="verdict win"><span class="big">Gulliver wins by ${Math.abs(diff)}</span><span class="small muted">We finish ${ord(pos)} as a team.</span></div>`
+    : diff > 0 ? `<div class="verdict lose"><span class="big">Bolles by ${diff}</span><span class="small muted">About ${Math.ceil(diff / 2)} more head-to-head passes needed. We finish ${ord(pos)}.</span></div>`
+    : `<div class="verdict"><span class="big">Tied at ${g.pts}</span><span class="small muted">The 6th runner breaks the tie.</span></div>`;
+  document.getElementById("scoreboard").innerHTML =
+    `<div class="sb-team gul"><span class="small">Gulliver Prep</span><span class="pts">${g.pts}</span><span class="scorers">${sc(g)}</span></div>
+     <div class="sb-team bol"><span class="small">Bolles HS</span><span class="pts">${b.pts}</span><span class="scorers">${sc(b)}</span></div>` + verdict;
+  [...simG, ...simB].forEach(r => {
+    const t = cur.get(r.n), d = t - r.tm, inp = r.el.querySelector("input");
+    if (document.activeElement !== inp) inp.value = d.toFixed(1);
+    const dd = Math.abs(d) < 0.05 ? "SB" : (d < 0 ? "−" : "+") + Math.abs(d).toFixed(1) + "s";
+    r.el.querySelector(".tm").innerHTML = fmt(t) + `<br><span class="small delta ${d < -0.05 ? "fast" : d > 0.05 ? "slow" : "muted"}">${dd}</span>`;
+    const p = place[r.n + "|" + r.t]; r.el.querySelector(".pl").textContent = p ? p + " pts" : "—";
+  });
+  document.querySelector("#standings tbody").innerHTML = totals.slice(0, 10).map((x, i) =>
+    `<tr class="${x.t === GI ? "hl-g" : x.t === BI ? "hl-b" : ""}"><td class="num">${i + 1}</td><td>${TEAMS[x.t]}</td><td class="num">${x.pts}</td><td class="num small">${sc(x)}</td></tr>`).join("");
+}
+resetTo({}); render();
+
+// ---------- charts ----------
+const tip = document.getElementById("tip");
+function showTip(e, html) { tip.innerHTML = html; tip.style.opacity = 1; const x = Math.min(e.clientX + 12, window.innerWidth - 250); tip.style.left = x + "px"; tip.style.top = (e.clientY + 12) + "px"; }
+function hideTip() { tip.style.opacity = 0; }
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text != null) n.textContent = text; parent.appendChild(n); return n; }
+const D0 = new Date("2026-08-17").getTime(), D1 = new Date("2026-11-17").getTime();
+
+function lineChart(svg, series, yMin, yMax, opts = {}) {
+  svg.innerHTML = "";
+  const W = 900, H = 330, L = 58, R = opts.right || 120, Tp = 14, B = opts.marks ? 54 : 34;
+  const x = d => L + (new Date(d).getTime() - D0) / (D1 - D0) * (W - L - R);
+  const y = s => Tp + (s - yMin) / (yMax - yMin) * (H - Tp - B); // faster (smaller) at top
+  for (let s = Math.ceil(yMin / 30) * 30; s <= yMax; s += 30) {
+    el("line", { x1: L, x2: W - R, y1: y(s), y2: y(s), class: "gridl" }, svg);
+    el("text", { x: L - 8, y: y(s) + 4, "text-anchor": "end" }, svg, fmt1(s).replace(".0", ""));
+  }
+  ["2026-09-01", "2026-10-01", "2026-11-01"].forEach(d => {
+    el("line", { x1: x(d), x2: x(d), y1: Tp, y2: H - B, class: "gridl", "stroke-dasharray": "2 4" }, svg);
+    el("text", { x: x(d), y: H - B + 18, "text-anchor": "middle" }, svg, new Date(d + "T12:00").toLocaleString("en-US", { month: "short" }) + " 1");
+  });
+  (opts.marks || []).forEach((mk, i) => { const mx = x(mk.d); el("line", { x1: mx, x2: mx, y1: Tp, y2: H - B, stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "4 3" }, svg); el("text", { x: mx, y: H - 6, "text-anchor": "end", class: "lbl-strong" }, svg, mk.label + " \u2191"); });
+  const labels = [];
+  series.forEach(se => {
+    const pts = se.pts.filter(p => p.v != null);
+    if (!pts.length) return;
+    const dstr = pts.map((p, i) => (i ? "L" : "M") + x(p.d).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
+    el("path", { d: dstr, fill: "none", stroke: se.color, "stroke-width": se.w || 2.5, "stroke-dasharray": se.dash ? "6 4" : "none", "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    pts.forEach(p => {
+      const c = el("circle", { cx: x(p.d), cy: y(p.v), r: p.big ? 5.5 : 4, fill: p.hollow ? css("--surface") : se.color, stroke: se.color, "stroke-width": 2, tabindex: 0 }, svg);
+      const html = `<b>${se.name}</b><br>${p.meet} · ${new Date(p.d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}<br>${fmt(p.v)}${p.sb ? " · season best" : ""}${p.hollow ? " · slow course" : ""}`;
+      c.addEventListener("mouseenter", e => showTip(e, html)); c.addEventListener("mousemove", e => showTip(e, html)); c.addEventListener("mouseleave", hideTip);
+      c.addEventListener("focus", () => { const r = c.getBoundingClientRect(); showTip({ clientX: r.right, clientY: r.bottom }, html); }); c.addEventListener("blur", hideTip);
+    });
+    const lp = pts[pts.length - 1]; labels.push({ y: y(lp.v), x: x(lp.d), text: se.name + " " + fmt1(lp.v), color: se.color });
+  });
+  labels.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < 14) labels[i].y = labels[i - 1].y + 14;
+  labels.forEach(l => { const t = el("text", { x: W - R + 10, y: l.y + 4, class: "lbl-strong" }, svg, l.text); t.style.fill = l.color; });
+}
+
+function teamChart() {
+  const g = css("--gul"), b = css("--bol");
+  lineChart(document.getElementById("teamChart"), [
+    { name: "Gulliver", color: g, pts: GMEETS.map((m, i) => ({ d: m[1], v: GTEAM[i], meet: m[0], hollow: !!m[2], big: m[0] === "New World" })) },
+    { name: "Bolles", color: b, dash: true, pts: BMEETS.map((m, i) => ({ d: m[1], v: BTEAM[i], meet: m[0], big: m[0] === "New World Fall" })) }
+  ], T("15:45"), T("17:50"), { marks: [{ d: "2026-10-16", label: "Oct 16: same race" }, { d: "2026-11-13", label: "Bolles Regionals, same course" }] });
+}
+
+const MATCHES = [
+  { k: "front", label: "Front", g: ["Kayaan Ghaffar"], b: ["Aaron Ches", "Aidan Chandler"], note: "Kayaan beat Ches by 13 s at New World. Both Bolles leaders finished the season on an upswing." },
+  { k: "b14", label: "Battles 1 & 4", g: ["Emilio Perez-Garcia", "Adrian Iziliaev"], b: ["Aidan Chandler", "Armaan Sharma"], note: "Sharma has run under 16:10 five straight times and was within 2 s on the New World course both times. Adrian's 15:52.2 came at our Regionals, a different course from Sharma's 15:51.9." },
+  { k: "b3", label: "Battle 3", g: ["Nicolas Altaba"], b: ["Brantley Rigdon", "Wyatt Cleek"], note: "On the New World course Rigdon went from 16:55 (Oct 16) to 16:02.8 (Nov 13). He and Cleek finished 2.1 s apart; plan for a pair." },
+  { k: "b2", label: "Battle 2", g: ["Nicolas Altaba", "Tyler Keating", "Christopher Arana"], b: ["Vincent Barragan", "Liam Sumner"], note: "Barragan ran 17:24.8 at Regionals on the same course where he ran 16:17 in October. Our three all finished the season 30–58 s faster than they started." },
+  { k: "seven", label: "#7s", g: ["Aston Conrad", "Vikram Sebastian"], b: ["Liam Sumner"], note: "Aston peaked at New World (16:41). Vikram is the alternate at 17:02." }
+];
+const shadesG = ["--gul", "#C0566F", "#E39AAC"], shadesB = ["--bol", "#5E8EC2", "#9DBBDD"];
+function shade(arr, i) { return arr[i].startsWith("--") ? css(arr[i]) : arr[i]; }
+let curMatch = "b14";
+function runnerChart() {
+  const m = MATCHES.find(x => x.k === curMatch);
+  const series = [];
+  m.g.forEach((n, i) => { const r = GUL.find(x => x.n === n); series.push({ name: r.s, color: shade(shadesG, i), pts: GMEETS.map((mt, j) => ({ d: mt[1], v: r.v[j], meet: mt[0], hollow: !!mt[2], sb: r.v[j] === r.sbv })) }); });
+  m.b.forEach((n, i) => { const r = BOL.find(x => x.n === n); series.push({ name: r.s, color: shade(shadesB, i), dash: true, pts: BMEETS.map((mt, j) => ({ d: mt[1], v: r.v[j], meet: mt[0], sb: r.v[j] === r.sbv })) }); });
+  const all = series.flatMap(s => s.pts.map(p => p.v)).filter(v => v != null && v < T("18:00"));
+  const lo = Math.floor((Math.min(...all) - 10) / 30) * 30, hi = Math.ceil((Math.max(...all) + 10) / 30) * 30;
+  lineChart(document.getElementById("runnerChart"), series.map(s => ({ ...s, pts: s.pts.map(p => ({ ...p, v: p.v != null && p.v <= hi ? p.v : null })) })), lo, hi);
+  document.getElementById("runnerLegend").innerHTML = series.map(s => `<span><i class="sw${s.dash ? " dash" : ""}" style="border-color:${s.color}"></i>${s.name}</span>`).join("") + `<span class="muted">Solid = Gulliver · dashed = Bolles</span>`;
+  document.getElementById("matchNote").textContent = m.note + " Times slower than the chart's bottom edge (like the District course) are left off.";
+}
+const mb = document.getElementById("matchBtns");
+MATCHES.forEach(m => { const b = document.createElement("button"); b.type = "button"; b.textContent = m.label; b.dataset.k = m.k; b.setAttribute("aria-pressed", String(m.k === curMatch)); b.addEventListener("click", () => { curMatch = m.k; mb.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.k === curMatch))); runnerChart(); }); mb.appendChild(b); });
+
+function drawCharts() { teamChart(); runnerChart(); }
+drawCharts();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawCharts);
+new MutationObserver(drawCharts).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+// ---------- battles ----------
+const form = r => { const d = r.last - r.sbv; if (d < 0.05) return '<span class="chip up">Best at last race</span>'; if (d <= 5) return '<span class="chip up">Near best</span>'; if (d <= 20) return '<span class="chip flat">' + d.toFixed(0) + ' s off</span>'; return '<span class="chip down">' + d.toFixed(0) + ' s off</span>'; };
+const BATTLES = [
+  { n: 1, title: "Our 2–3 beat their 3", worth: "2 pts", g: ["Emilio Perez-Garcia", "Adrian Iziliaev"], b: ["Armaan Sharma"], read: "Even on paper. Emilio is 1.0 s ahead, Adrian 2.2 s behind. Sharma is their most consistent runner." },
+  { n: 2, title: "Our 4–6 beat their 6–7", worth: "9 pts", g: ["Nicolas Altaba", "Tyler Keating", "Christopher Arana"], b: ["Vincent Barragan", "Liam Sumner"], read: "Biggest lever. Barragan and Sumner were both slower on the New World course in November than in October. Nicolas lost to Barragan by only 1.0 s there." },
+  { n: 3, title: "Our 4 beats their 4–5", worth: "8 pts", g: ["Nicolas Altaba"], b: ["Brantley Rigdon", "Wyatt Cleek"], read: "A 15 s gap, and harder than it looked: Rigdon ran 52 s faster on the New World course in November. Christopher's Regionals form makes him a second option." },
+  { n: 4, title: "Our 2–3 beat their 2", worth: "8 pts", g: ["Emilio Perez-Garcia", "Adrian Iziliaev"], b: ["Aidan Chandler"], read: "The hardest one. Chandler ran a best at Regionals. It needs Emilio back near 15:49 and Adrian repeating his 15:52." }
+];
+document.getElementById("battleCards").innerHTML = BATTLES.map(bt => {
+  const rows = [...bt.g.map(n => ({ r: GUL.find(x => x.n === n), c: "g" })), ...bt.b.map(n => ({ r: BOL.find(x => x.n === n), c: "b" }))];
+  return `<article class="battle"><div class="top"><h3>${bt.n}. ${bt.title}</h3><span class="worth">Worth ${bt.worth}</span></div>
+  <div class="tablewrap"><table><thead><tr><th>Runner</th><th class="num">Best</th><th class="num">Last race</th><th>Form</th></tr></thead><tbody>
+  ${rows.map(({ r, c }) => `<tr><td class="${c}">${r.n}</td><td class="num">${fmt(r.sbv)}</td><td class="num">${fmt(r.last)}</td><td>${form(r)}</td></tr>`).join("")}
+  </tbody></table></div><p class="small">${bt.read}</p></article>`;
+}).join("");
+
+// ---------- roster tables ----------
+function rosterTable(id, meets, list, withAlt) {
+  const head = `<thead><tr><th>Runner</th>${meets.map(m => `<th class="num">${m[0]}<br><span style="text-transform:none;letter-spacing:0;font-weight:400">${new Date(m[1] + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></th>`).join("")}<th class="num">Best</th><th class="num">First→last</th><th>Form</th></tr></thead>`;
+  const body = list.map(r => {
+    const vs = r.v.filter(x => x != null); const fl = r.last - vs[0];
+    const cells = r.v.map((v, j) => `<td class="num${v === r.sbv ? " isSB" : ""}${meets[j][2] && v != null ? " slowc" : ""}">${fmt(v)}</td>`).join("");
+    return `<tr${r.alt ? ' style="opacity:.8"' : ""}><td>${r.n}${r.alt ? ' <span class="small muted">(alt)</span>' : ""}</td>${cells}<td class="num sb">${fmt(r.sbv)}</td><td class="num ${fl < 0 ? "delta fast" : "delta slow"}">${fl < 0 ? "−" : "+"}${Math.abs(fl).toFixed(1)}s</td><td>${form(r)}</td></tr>`;
+  }).join("");
+  document.getElementById(id).innerHTML = head + "<tbody>" + body + "</tbody>";
+}
+rosterTable("gulTable", GMEETS, GUL);
+rosterTable("bolTable", BMEETS, BOL);
+
+// ---------- runner tabs ----------
+const TGT = {"kayaan": ["Aaron Ches", "Aidan Chandler"], "emilio": ["Aidan Chandler", "Armaan Sharma"], "adrian": ["Armaan Sharma", "Aidan Chandler"], "nicolas": ["Brantley Rigdon", "Wyatt Cleek", "Vincent Barragan"], "tyler": ["Vincent Barragan", "Liam Sumner"], "christopher": ["Vincent Barragan", "Liam Sumner"], "aston": ["Liam Sumner", "Vincent Barragan"]};
+function drawRunner(panel) {
+  const r = GUL.find(x => x.n === panel.dataset.runner); if (!r) return;
+  const k = panel.id.slice(2);
+  const series = [{ name: r.s, color: css("--gul"), w: 3, pts: GMEETS.map((mt, j) => ({ d: mt[1], v: r.v[j], meet: mt[0], hollow: !!mt[2], sb: r.v[j] === r.sbv })) }];
+  TGT[k].forEach((n, i) => { const b = BOL.find(x => x.n === n); series.push({ name: b.s, color: shade(shadesB, i), dash: true, pts: BMEETS.map((mt, j) => ({ d: mt[1], v: b.v[j], meet: mt[0], sb: b.v[j] === b.sbv })) }); });
+  const all = series.flatMap(s => s.pts.map(p => p.v)).filter(v => v != null && v < T("18:00"));
+  const lo = Math.floor((Math.min(...all) - 10) / 30) * 30, hi = Math.ceil((Math.max(...all) + 10) / 30) * 30;
+  lineChart(panel.querySelector("[data-chart]"), series.map(s => ({ ...s, pts: s.pts.map(p => ({ ...p, v: p.v != null && p.v <= hi ? p.v : null })) })), lo, hi);
+  panel.querySelector("[data-legend]").innerHTML = series.map(s => `<span><i class="sw${s.dash ? " dash" : ""}" style="border-color:${s.color}"></i>${s.name}</span>`).join("");
+  panel.querySelector("[data-last]").textContent = fmt(r.last);
+  panel.querySelector("[data-form]").innerHTML = form(r);
+}
+const runnerPanels = [...document.querySelectorAll(".panel[data-runner]")];
+function drawAllRunners() { runnerPanels.forEach(drawRunner); }
+drawAllRunners();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAllRunners);
+new MutationObserver(drawAllRunners).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+// ---------- tab routing ----------
+const panels = [...document.querySelectorAll(".panel")];
+function route() {
+  const h = (location.hash || "").slice(1);
+  const target = panels.find(p => p.id === "p-" + h) || document.getElementById("p-overview");
+  panels.forEach(p => p.hidden = p !== target);
+  document.querySelectorAll(".tab").forEach(t => { if ("p-" + t.dataset.tab === target.id) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+  const cur = document.querySelector('.tab[aria-current="page"]'); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); });
+route();
+})();
+</script>
+</body>
+</html>
